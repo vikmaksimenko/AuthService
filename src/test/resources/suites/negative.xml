@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Negative Tests Suite" parallel="methods" thread-count="3" data-provider-thread-count="3">
+    <test verbose="2" preserve-order="true" name="negative">
+        <groups>
+            <run>
+                <include name="negative"/>
+            </run>
+        </groups>
+    </test>
+    <packages>
+        <package name="net.absoft"></package>
+    </packages>
+</suite>
