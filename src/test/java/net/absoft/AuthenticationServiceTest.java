@@ -10,19 +10,20 @@ import org.testng.asserts.SoftAssert;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.testng.Assert.fail;
+
 public class AuthenticationServiceTest {
 
     private AuthenticationService authenticationService;
 
-    @BeforeClass(
-            groups = {"positive","negative"}
-    )
+    @BeforeClass(groups = {"positive", "negative"})
     public void setUp() {
         authenticationService = new AuthenticationService();
     }
 
     @Test(
-            groups = "positive"
+            groups = "positive",
+            priority = 1
     )
     public void testSuccessfulAuthentication() {
         Response response = authenticationService.authenticate("user1@test.com", "password1");
@@ -34,7 +35,10 @@ public class AuthenticationServiceTest {
         softAssert.assertAll();
     }
 
-    @DataProvider(name = "invalidAuthData")
+    @DataProvider(
+            name = "invalidAuthData",
+            parallel = true
+    )
     public Object[][] invalidAuthenticationData() {
         return new Object[][]{
                 new Object[]{"user1@test.com", "wrong_password1",
@@ -50,59 +54,27 @@ public class AuthenticationServiceTest {
 
     @Test(
             groups = "negative",
+            priority = 2,
             dataProvider = "invalidAuthData"
     )
-    public void testInvalidAthentication(String email, String password, Response expectedResponse) {
+    public void testInvalidAthentication(String email, String password, Response expectedResponse) throws InterruptedException {
         int expectedCode = expectedResponse.getCode();
         String expectedMessage = expectedResponse.getMessage();
         Response actualResponse = authenticationService.authenticate(email, password);
 
         validateErrorResponse(actualResponse, expectedCode, expectedMessage);
+
+        Thread.sleep(2000);
     }
 
-//    @Test(
-//            groups = "negative"
-//    )
-//    public void testAuthenticationWithWrongPassword() {
-//        int expectedCode = 401;
-//        String expectedMessage = "Invalid email or password";
-//        Response response = authenticationService.authenticate("user1@test.com", "wrong_password1");
-//
-//        validateErrorResponse(response, expectedCode, expectedMessage);
-//    }
-//
-//    @Test(
-//            groups = "negative"
-//    )
-//    public void testAuthenticationWithEmptyEmail() {
-//        int expectedCode = 400;
-//        String expectedMessage = "Email should not be empty string";
-//        Response response = authenticationService.authenticate("", "password1");
-//
-//        validateErrorResponse(response, expectedCode, expectedMessage);
-//    }
-//
-//    @Test(
-//            groups = "negative"
-//    )
-//    public void testAuthenticationWithInvalidEmail() {
-//        int expectedCode = 400;
-//        String expectedMessage = "Invalid email";
-//        Response response = authenticationService.authenticate("user1", "password1");
-//
-//        validateErrorResponse(response, expectedCode, expectedMessage);
-//    }
-//
-//    @Test(
-//            groups = "negative"
-//    )
-//    public void testAuthenticationWithEmptyPassword() {
-//        int expectedCode = 400;
-//        String expectedMessage = "Password should not be empty string";
-//        Response response = authenticationService.authenticate("user1@test", "");
-//
-//        validateErrorResponse(response, expectedCode, expectedMessage);
-//    }
+    @Test(
+            groups = "negative",
+            priority = 3
+    )
+    public void failingTest() {
+        System.out.println("This is failing test");
+        fail("This test failed");
+    }
 
     private boolean validateToken(String token) {
         final Pattern pattern = Pattern.compile("\\S{32}", Pattern.MULTILINE);

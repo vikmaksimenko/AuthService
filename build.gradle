@@ -15,9 +15,18 @@ dependencies {
 }
 
 test {
-    useTestNG(){
-        suites "src/test/resources/suites/alltestssuite.xml"
-        suites "src/test/resources/suites/positivetestssuite.xml"
-        suites "src/test/resources/suites/negativetestssuite.xml"
+    useTestNG() {
+        if (isPreserveOrder() || isGroupByInstances() || isUseDefaultListeners()) {
+            suites "src/test/resources/suites/alltestssuite.xml"
+        } else {
+            setPreserveOrder true
+            setGroupByInstances true
+            useDefaultListeners true
+            suites "src/test/resources/suites/positivetestssuite.xml"
+            suites "src/test/resources/suites/negativetestssuite.xml"
+        }
     }
 }
+
+
+
