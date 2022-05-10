@@ -15,5 +15,9 @@ dependencies {
 }
 
 test {
-    useTestNG()
+    useTestNG(){
+        suites "src/test/resources/suites/alltestssuite.xml"
+        suites "src/test/resources/suites/positivetestssuite.xml"
+        suites "src/test/resources/suites/negativetestssuite.xml"
+    }
 }
